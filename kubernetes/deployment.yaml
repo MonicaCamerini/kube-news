@@ -13,7 +13,7 @@ spec:
     spec:
       containers: 
       - name: postgre
-        image: postgre:14.5.0
+        image: postgres:15.0
         ports: 
         - containerPort: 5432
         env:
@@ -42,6 +42,7 @@ kind: Deployment
 metadata: 
   name: web
 spec:
+  replicas: 2
   selector: 
     matchLabels:
       app: web
@@ -57,11 +58,11 @@ spec:
         - containerPort: 4040
         env:
         - name: DB_DATABASE
-          value: "kubedevnews"
+          value: "bancoKubeNews"
         - name: DB_USERNAME
           value: "kubedevnews"
         - name: DB_PASSWORD
-          value: "Pg#123" 
+          value: "kubenews" 
         - name: DB_HOST
           value: "postgre"          
 ---
