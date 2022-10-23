@@ -1,7 +1,7 @@
 # Deployment for Postgre
 apiVersion: apps/v1
 kind: Deployment
-metadata:
+metadata: 
   name: postgre
 spec:
   selector:
@@ -14,17 +14,19 @@ spec:
     spec:
       containers:
         - name: postgre
-          image: postgres:14.3
+          image: postgres:15.0
           ports:
             - containerPort: 5432
           env:
-            - name: POSTGRES_PASSWORD
-              value: "mxptoAB884@DKFH299"
-            - name: POSTGRES_USER
-              value: "kubenews"
-            - name: POSTGRES_DB
-              value: "kubenews"
+          - name: POSTGRES_DB
+            value: "kubenews"
+          - name: POSTGRES_USER
+            value: "kubenews"         
+          - name: POSTGRES_PASSWORD
+            value: "Pg#123"
 ---
+
+# Service for Postgre
 apiVersion: v1
 kind: Service
 metadata:
@@ -34,9 +36,10 @@ spec:
     app: postgre
   ports:
     - port: 5432
-      targetPort: 5432
+  type: ClusterIP
 ---
 
+# Deployment for web
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -52,26 +55,30 @@ spec:
         app: kubenews
       annotations:
         prometheus.io/scrape: "true"
-        prometheus.io/port: "8080"
+        prometheus.io/port: "4040"
         prometheus.io/path: "/metrics"
     spec:
       containers:
         - name: kubenews
-          image: monicasequor/kube-news:7
+          image: monicasequor/kube-news:{{TAG}}
+          ports:
+          - containerPort: 4040
           env:
-            - name: DB_PASSWORD
-              value: "mxptoAB884@DKFH299"
-            - name: DB_USERNAME
-              value: "kubenews"
-            - name: DB_DATABASE
-              value: "kubenews"
-            - name: DB_HOST
-              value: "postgre"
+          - name: DB_DATABASE
+            value: "kubenews"
+          - name: DB_USERNAME
+            value: "kubenews"         
+          - name: DB_PASSWORD
+            value: "Pg#123"
+          - name: DB_HOST
+            value: "postgre"
 ---
+
+# Service for web
 apiVersion: v1
 kind: Service
 metadata:
-  name: kube-news
+  name: kubenews
 spec:
   selector:
     app: kubenews
