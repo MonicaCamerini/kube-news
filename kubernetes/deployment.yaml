@@ -55,14 +55,14 @@ spec:
         app: kubenews
       annotations:
         prometheus.io/scrape: "true"
-        prometheus.io/port: "4040"
+        prometheus.io/port: "8080"
         prometheus.io/path: "/metrics"
     spec:
       containers:
         - name: kubenews
           image: monicasequor/kube-news:{{TAG}}
           ports:
-          - containerPort: 4040
+          - containerPort: 8080
           env:
           - name: DB_DATABASE
             value: "kubenews"
@@ -83,6 +83,6 @@ spec:
   selector:
     app: kubenews
   ports:
-    - port: 82
-      targetPort: 4040
+    - port: 80
+      targetPort: 8080
   type: LoadBalancer
