@@ -1,81 +1,77 @@
+# Deployment for Postgre
 apiVersion: apps/v1
 kind: Deployment
-metadata: 
+metadata:
   name: postgre
 spec:
-  selector: 
+  selector:
     matchLabels:
       app: postgre
-  template: 
-    metadata: 
+  template:
+    metadata:
       labels:
         app: postgre
     spec:
-      containers: 
-      - name: postgre
-        image: postgres:15.0
-        ports: 
-        - containerPort: 5432
-        env:
-        - name: POSTGRES_PASSWORD
-          value: "kubenews"
-        - name: POSTGRES_USER
-          value: "kubenews"
-        - name: POSTGRES_DB
-          value: "bancoKubeNews"          
+      containers:
+        - name: postgre
+          image: postgres:14.3
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_PASSWORD
+              value: "mxptoAB884@DKFH299"
+            - name: POSTGRES_USER
+              value: "kubenews"
+            - name: POSTGRES_DB
+              value: "kubenews"
 ---
-
 apiVersion: v1
 kind: Service
-metadata: 
+metadata:
   name: postgre
 spec:
-  selector: 
+  selector:
     app: postgre
-  ports: 
+  ports:
     - port: 5432
-  type: ClusterIP
+      targetPort: 5432
 ---
-
+# Deployment for Application
 apiVersion: apps/v1
 kind: Deployment
-metadata: 
-  name: web
+metadata:
+  name: kubenews
 spec:
-  replicas: 2
-  selector: 
+  replicas: 10
+  selector:
     matchLabels:
-      app: web
-  template: 
-    metadata: 
+      app: kubenews
+  template:
+    metadata:
       labels:
-        app: web
+        app: kubenews
     spec:
-      containers: 
-      - name: web
-        image: monicasequor/kube-news:v1
-        ports: 
-        - containerPort: 4040
-        env:
-        - name: DB_DATABASE
-          value: "bancoKubeNews"
-        - name: DB_USERNAME
-          value: "kubedevnews"
-        - name: DB_PASSWORD
-          value: "kubenews" 
-        - name: DB_HOST
-          value: "postgre"          
+      containers:
+        - name: kubenews
+          image: wr2net/kube-news:v2
+          env:
+            - name: DB_PASSWORD
+              value: "mxptoAB884@DKFH299"
+            - name: DB_USERNAME
+              value: "kubenews"
+            - name: DB_DATABASE
+              value: "kubenews"
+            - name: DB_HOST
+              value: "postgre"
 ---
 apiVersion: v1
 kind: Service
-metadata: 
-  name: web
+metadata:
+  name: kube-news
 spec:
-  selector: 
-    app: web
-  ports: 
-    - port: 80
+  selector:
+    app: kubenews
+  ports:
+    - port: 82
       targetPort: 4040
-      nodePort: 30000
-  type: NodePort
----
+  type: LoadBalancer
